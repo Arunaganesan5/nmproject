@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Register Form CRUD</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #e6f2ff;
+    padding: 30px;
+}
+
+.container {
+    background-color: #ffffff;
+    width: 320px;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+h2 {
+    text-align: center;
+}
+
+label {
+    display: block;
+    margin-top: 10px;
+}
+
+input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+}
+
+button {
+    width: 100%;
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+table {
+    margin-top: 30px;
+    border-collapse: collapse;
+    width: 70%;
+    background-color: white;
+}
+
+table, th, td {
+    border: 1px solid black;
+}
+
+th, td {
+    padding: 10px;
+    text-align: center;
+}
+
+.action-btn {
+    width: auto;
+    padding: 5px 10px;
+    margin: 2px;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.edit {
+    background-color: green;
+}
+
+.delete {
+    background-color: red;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>Register Form</h2>
+
+    <form id="registerForm">
+        <input type="hidden" id="editId">
+
+        <label>Name</label>
+        <input type="text" id="name" required>
+
+        <label>Email</label>
+        <input type="email" id="email" required>
+
+        <label>Password</label>
+        <input type="password" id="password" required>
+
+        <button type="submit">Save</button>
+    </form>
+</div>
+
+<h2>Registered Users</h2>
+
+<table>
+<thead>
+<tr>
+    <th>Name</th>
+    <th>Email</th>
+    <th>Actions</th>
+</tr>
+</thead>
+<tbody id="userTable"></tbody>
+</table>
+
+<script>
+let users = [];
+
+document.getElementById("registerForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    let editId = document.getElementById("editId").value;
+    let name = document.getElementById("name").value;
+    let email = document.getElementById("email").value;
+    let password = document.getElementById("password").value;
+
+    if (editId === "") {
+        // ADD USER
+        users.push({
+            id: Date.now(),
+            name: name,
+            email: email,
+            password: password
+        });
+    } else {
+        // UPDATE USER
+        for (let i = 0; i < users.length; i++) {
+            if (users[i].id == editId) {
+                users[i].name = name;
+                users[i].email = email;
+                users[i].password = password;
+            }
+        }
+    }
+
+    this.reset();
+    document.getElementById("editId").value = "";
+    displayUsers();
+});
+
+function displayUsers() {
+    let table = document.getElementById("userTable");
+    table.innerHTML = "";
+
+    for (let i = 0; i < users.length; i++) {
+        table.innerHTML += `
+        <tr>
+            <td>${users[i].name}</td>
+            <td>${users[i].email}</td>
+            <td>
+                <button class="action-btn edit" onclick="editUser(${users[i].id})">Edit</button>
+                <button class="action-btn delete" onclick="deleteUser(${users[i].id})">Delete</button>
+            </td>
+        </tr>`;
+    }
+}
+
+function editUser(id) {
+    for (let i = 0; i < users.length; i++) {
+        if (users[i].id === id) {
+            document.getElementById("name").value = users[i].name;
+            document.getElementById("email").value = users[i].email;
+            document.getElementById("password").value = users[i].password;
+            document.getElementById("editId").value = id;
+        }
+    }
+}
+
+function deleteUser(id) {
+    users = users.filter(user => user.id !== id);
+    displayUsers();
+}
+</script>
+
+</body>
+</html>
